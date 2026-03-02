@@ -1,22 +1,33 @@
-// src/routes.tsx - FIXED VERSION
+// worktracker-admin/src/routes.tsx
+// UPDATED: Add Settings page
+
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AdminDashboard from './pages/Dashboard';
-import Programs       from './pages/Programs';
-import ProgramForm    from './pages/ProgramForm';
-import ProgramDetail  from './pages/ProgramDetail';
-import Login          from './pages/login';
+import Programs from './pages/Programs';
+import ProgramForm from './pages/ProgramForm';
+import ProgramDetail from './pages/ProgramDetail';
+import Login from './pages/login';
 import Tasks from './pages/Tasks';
 import TaskSuggestions from './pages/TaskSuggestions';
-// ── Simple layout with sidebar ────────────────────────────────────────────────
+import Users from './pages/Users';
+import UserDetail from './pages/UserDetail';
+import Vendors from './pages/Vendors';
+import VendorDetail from './pages/VendorDetail';
+import Withdrawals from './pages/Withdrawals';
+import Settings from './pages/Settings'; // ✅ NEW
 import { COLORS } from './theme/colours';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const NAV_ITEMS = [
-  { path: '/',                label: '📊 Dashboard',  exact: true },
-  { path: '/programs',        label: '🏆 Programs'             },
-  { path: '/tasks',           label: '✅ Tasks'                }, // ← NEW
-  { path: '/task-suggestions', label: '💡 Suggestions'         }, // ← NEW
+  { path: '/', label: '📊 Dashboard', exact: true },
+  { path: '/programs', label: '🏆 Programs' },
+  { path: '/tasks', label: '✅ Tasks' },
+  { path: '/task-suggestions', label: '💡 Suggestions' },
+  { path: '/users', label: '👥 Users' },
+  { path: '/vendors', label: '🏪 Vendors' },
+  { path: '/withdrawals', label: '💰 Withdrawals' },
+  { path: '/settings', label: '⚙️ Settings' }, // ✅ NEW
 ];
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -28,12 +39,16 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       {/* Sidebar */}
       <div style={sidebarStyles.sidebar}>
         <div style={sidebarStyles.logo}>
-          <span style={{ fontSize: 22, fontWeight: 800, color: COLORS.primary }}>WorkTracker</span>
-          <span style={{ fontSize: 11, color: COLORS.textLight, display: 'block' }}>Admin Panel</span>
+          <span style={{ fontSize: 22, fontWeight: 800, color: COLORS.primary }}>
+            WorkTracker
+          </span>
+          <span style={{ fontSize: 11, color: COLORS.textLight, display: 'block' }}>
+            Admin Panel
+          </span>
         </div>
 
         <nav>
-          {NAV_ITEMS.map(item => {
+          {NAV_ITEMS.map((item) => {
             const isActive = item.exact
               ? location.pathname === item.path
               : location.pathname.startsWith(item.path);
@@ -123,20 +138,18 @@ const sidebarStyles: any = {
   },
 };
 
-// ── Auth guard ────────────────────────────────────────────────────────────────
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = localStorage.getItem('admin_token');
   return token ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
-// ── Main Router ───────────────────────────────────────────────────────────────
 const AppRoutes: React.FC = () => (
   <BrowserRouter>
     <Routes>
       {/* Public */}
       <Route path="/login" element={<Login />} />
 
-      {/* Protected - all wrapped in Layout */}
+      {/* Protected */}
       <Route
         path="/"
         element={
@@ -190,7 +203,7 @@ const AppRoutes: React.FC = () => (
         }
       />
 
-      {/* Tasks - NEW */}
+      {/* Tasks */}
       <Route
         path="/tasks"
         element={
@@ -207,6 +220,74 @@ const AppRoutes: React.FC = () => (
           <PrivateRoute>
             <Layout>
               <TaskSuggestions />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      {/* Users */}
+      <Route
+        path="/users"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <Users />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/users/:id"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <UserDetail />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      {/* Vendors */}
+      <Route
+        path="/vendors"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <Vendors />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/vendors/:id"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <VendorDetail />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      {/* Withdrawals */}
+      <Route
+        path="/withdrawals"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <Withdrawals />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      {/* ✅ NEW: Settings */}
+      <Route
+        path="/settings"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <Settings />
             </Layout>
           </PrivateRoute>
         }

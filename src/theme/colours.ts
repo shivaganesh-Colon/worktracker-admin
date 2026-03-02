@@ -16,4 +16,5 @@ export const COLORS = {
   textSecondary:  '#6B7280',
   textLight:      '#9CA3AF',
   gold:           '#F59E0B',
+  success:         '#228B22',
 };
