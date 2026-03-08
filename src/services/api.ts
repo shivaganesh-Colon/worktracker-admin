@@ -1,4 +1,4 @@
-// worktracker-admin/src/services/api.ts - UPDATED WITH USERS & VENDORS
+// worktracker-admin/src/services/api.ts - UPDATED WITH USERS, VENDORS & TASK REVIEWS
 import axios from 'axios';
 
 const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api/v1';
@@ -113,45 +113,47 @@ export const programsApi = {
 };
 
 // ══════════════════════════════════════════════════════════════════
-// ✅ USERS API (NEW)
+// USERS API
 // ══════════════════════════════════════════════════════════════════
 
 export const usersApi = {
-  // GET all users with pagination & search
   getAll: (params?: { page?: number; limit?: number; search?: string }) =>
     api.get('/admin/users', { params }),
-
-  // GET single user details
   getById: (id: string) => api.get(`/admin/users/${id}`),
-
-  // GET user statistics
   getStats: () => api.get('/admin/users/stats'),
-
-  // PATCH deactivate user
   deactivate: (id: string) => api.patch(`/admin/users/${id}/deactivate`),
 };
 
 // ══════════════════════════════════════════════════════════════════
-// ✅ VENDORS API (NEW)
+// VENDORS API
 // ══════════════════════════════════════════════════════════════════
 
 export const vendorsApi = {
-  // GET all vendors with pagination & search
   getAll: (params?: { page?: number; limit?: number; search?: string }) =>
     api.get('/admin/vendors', { params }),
-
-  // GET single vendor details
   getById: (id: string) => api.get(`/admin/vendors/${id}`),
-
-  // GET vendor statistics
   getStats: () => api.get('/admin/vendors/stats'),
-
-  // PATCH toggle vendor status (activate/deactivate)
   toggleStatus: (id: string, isActive: boolean) =>
     api.patch(`/admin/vendors/${id}/toggle-status`, { isActive }),
-
-  // DELETE vendor
   delete: (id: string) => api.delete(`/admin/vendors/${id}`),
+};
+
+// ══════════════════════════════════════════════════════════════════
+// ✅ TASK REVIEWS API (NEW)
+// ══════════════════════════════════════════════════════════════════
+
+export const taskReviewsApi = {
+  // GET pending submissions
+  getPending: (params?: { page?: number; limit?: number }) =>
+    api.get('/admin/pending-tasks', { params }),
+
+  // POST approve — body: { bonusPoints?: number }
+  approve: (userTaskId: string, bonusPoints = 0) =>
+    api.post(`/admin/pending-tasks/${userTaskId}/approve`, { bonusPoints }),
+
+  // POST reject — body: { reason: string }
+  reject: (userTaskId: string, reason: string) =>
+    api.post(`/admin/pending-tasks/${userTaskId}/reject`, { reason }),
 };
 
 // ══════════════════════════════════════════════════════════════════

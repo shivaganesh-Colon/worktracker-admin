@@ -16,8 +16,10 @@ import Vendors from './pages/Vendors';
 import VendorDetail from './pages/VendorDetail';
 import Withdrawals from './pages/Withdrawals';
 import Settings from './pages/Settings'; // ✅ NEW
+import PendingTaskReviews from './pages/PendingTaskReviews'; // ✅ NEW
 import { COLORS } from './theme/colours';
 import { useNavigate, useLocation } from 'react-router-dom';
+import PointsLedgerPage from './pages/Pointsledger';
 
 const NAV_ITEMS = [
   { path: '/', label: '📊 Dashboard', exact: true },
@@ -28,6 +30,9 @@ const NAV_ITEMS = [
   { path: '/vendors', label: '🏪 Vendors' },
   { path: '/withdrawals', label: '💰 Withdrawals' },
   { path: '/settings', label: '⚙️ Settings' }, // ✅ NEW
+  { path: '/pending-tasks', label: '📸 Task Reviews' }, // ✅ NEW
+  { path: '/points-ledger', label: '💰 Points Ledger' }, // ✅ NEW
+  
 ];
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -293,6 +298,27 @@ const AppRoutes: React.FC = () => (
         }
       />
 
+      {/* ✅ NEW: Pending Task Reviews */}
+      <Route
+        path="/pending-tasks"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <PendingTaskReviews />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+<Route
+        path="/points-ledger"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <PointsLedgerPage />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
