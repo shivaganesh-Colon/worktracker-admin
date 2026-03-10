@@ -1,7 +1,8 @@
 // worktracker-admin/src/services/api.ts - UPDATED WITH USERS, VENDORS & TASK REVIEWS
 import axios from 'axios';
 
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api/v1';
+// const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api/v1';
+const BASE_URL =  'http://3.236.251.245:3000/api/v1';
 
 const api = axios.create({
   baseURL: BASE_URL,
