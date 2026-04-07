@@ -67,6 +67,13 @@ const TYPE_COLORS: Record<string, 'success' | 'error' | 'warning' | 'info'> = {
   withdrawal: 'error',
 };
 
+const TYPE_STYLES: Record<string, { bg: string; color: string; label: string }> = {
+  earn:       { bg: '#DCFCE7', color: '#15803D', label: 'earn' },
+  bonus:      { bg: '#FEF9C3', color: '#A16207', label: 'bonus' },
+  spend:      { bg: '#FEE2E2', color: '#B91C1C', label: 'spend' },
+  withdrawal: { bg: '#FEE2E2', color: '#B91C1C', label: 'withdrew' },
+};
+
 const SOURCE_LABELS: Record<string, string> = {
   task_complete:    '✅ Task',
   signup_bonus:     '🎁 Signup',
@@ -74,6 +81,7 @@ const SOURCE_LABELS: Record<string, string> = {
   vendor_redeem:    '🛍️ Vendor',
   cash_withdrawal:  '💸 Withdrawal',
   achievement:      '🏆 Achievement',
+  leaderboard:      '🥇 Leaderboard',
 };
 
 const initFilters = {
@@ -154,13 +162,31 @@ const UserLedgerDialog = ({ userId, onClose }: { userId: string; onClose: () => 
           <>
             {/* User summary chips */}
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-              <Chip icon={<TrendingUp />}  label={`Earned: +${totalEarned.toLocaleString()}`}  color="success" variant="outlined" />
-              <Chip icon={<EmojiEvents />} label={`Bonus: +${totalBonus.toLocaleString()}`}   color="warning" variant="outlined" />
-              <Chip icon={<TrendingDown />} label={`Spent: ${totalSpent.toLocaleString()}`}   color="error"   variant="outlined" />
-              <Chip icon={<AccountBalanceWallet />} label={`Withdrawn: ${Math.abs(totalWithdraw).toLocaleString()}`} color="error" variant="outlined" />
-              <Chip label={`Current Balance: ${data.user.totalPoints.toLocaleString()} pts`} color="primary" />
-              <Chip label={`Level ${data.user.level}`} variant="outlined" />
-              <Chip label={`${data.user.tasksCompleted} tasks`} variant="outlined" />
+              <Box sx={{ px: 1.5, py: 0.6, borderRadius: 2, backgroundColor: '#DCFCE7', border: '1px solid #86EFAC', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <TrendingUp sx={{ fontSize: 14, color: '#15803D' }} />
+                <Typography variant="caption" fontWeight={700} color="#15803D">Earned: +{totalEarned.toLocaleString()}</Typography>
+              </Box>
+              <Box sx={{ px: 1.5, py: 0.6, borderRadius: 2, backgroundColor: '#FEF9C3', border: '1px solid #FCD34D', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <EmojiEvents sx={{ fontSize: 14, color: '#A16207' }} />
+                <Typography variant="caption" fontWeight={700} color="#A16207">Bonus: +{totalBonus.toLocaleString()}</Typography>
+              </Box>
+              <Box sx={{ px: 1.5, py: 0.6, borderRadius: 2, backgroundColor: '#FEE2E2', border: '1px solid #FCA5A5', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <TrendingDown sx={{ fontSize: 14, color: '#B91C1C' }} />
+                <Typography variant="caption" fontWeight={700} color="#B91C1C">Spent: {totalSpent.toLocaleString()}</Typography>
+              </Box>
+              <Box sx={{ px: 1.5, py: 0.6, borderRadius: 2, backgroundColor: '#FEE2E2', border: '1px solid #FCA5A5', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <AccountBalanceWallet sx={{ fontSize: 14, color: '#B91C1C' }} />
+                <Typography variant="caption" fontWeight={700} color="#B91C1C">Withdrawn: {Math.abs(totalWithdraw).toLocaleString()}</Typography>
+              </Box>
+              <Box sx={{ px: 1.5, py: 0.6, borderRadius: 2, backgroundColor: '#EDE9FE', border: '1px solid #A78BFA', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Typography variant="caption" fontWeight={800} color="#6D28D9">⭐ Balance: {data.user.totalPoints.toLocaleString()} pts</Typography>
+              </Box>
+              <Box sx={{ px: 1.5, py: 0.6, borderRadius: 2, backgroundColor: '#F1F5F9', border: '1px solid #CBD5E1' }}>
+                <Typography variant="caption" fontWeight={600} color="#475569">Lv {data.user.level}</Typography>
+              </Box>
+              <Box sx={{ px: 1.5, py: 0.6, borderRadius: 2, backgroundColor: '#F1F5F9', border: '1px solid #CBD5E1' }}>
+                <Typography variant="caption" fontWeight={600} color="#475569">{data.user.tasksCompleted} tasks</Typography>
+              </Box>
             </Box>
 
             <Divider sx={{ mb: 2 }} />
@@ -186,22 +212,34 @@ const UserLedgerDialog = ({ userId, onClose }: { userId: string; onClose: () => 
                         <Typography variant="caption" color="text.secondary">{format(new Date(e.createdAt), 'hh:mm a')}</Typography>
                       </TableCell>
                       <TableCell>
-                        <Chip label={e.type} size="small" color={TYPE_COLORS[e.type] || 'default'} />
+                        {(() => {
+                          const ts = TYPE_STYLES[e.type] || { bg: '#F3F4F6', color: '#374151', label: e.type };
+                          return (
+                            <Box sx={{
+                              display: 'inline-block', px: 1.5, py: 0.4,
+                              borderRadius: 2, backgroundColor: ts.bg, color: ts.color,
+                              fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5,
+                            }}>
+                              {ts.label}
+                            </Box>
+                          );
+                        })()}
                       </TableCell>
                       <TableCell>
                         <Typography variant="caption">{SOURCE_LABELS[e.source] || e.source}</Typography>
                       </TableCell>
                       <TableCell align="right">
                         <Typography
-                          fontWeight={700}
-                          color={e.points > 0 ? 'success.main' : 'error.main'}
-                          variant="body2"
+                          fontWeight={800}
+                          fontSize={14}
+                          color={e.points > 0 ? '#15803D' : '#B91C1C'}
                         >
                           {e.points > 0 ? '+' : ''}{e.points.toLocaleString()}
                         </Typography>
                       </TableCell>
                       <TableCell align="right">
-                        <Typography variant="body2" fontWeight={600}>{e.balanceAfter.toLocaleString()}</Typography>
+                        <Typography variant="body2" fontWeight={700}>{e.balanceAfter.toLocaleString()}</Typography>
+                        <Typography variant="caption" color="text.disabled">pts</Typography>
                       </TableCell>
                       <TableCell>
                         <Typography variant="caption" color="text.secondary" sx={{ maxWidth: 200, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -490,8 +528,12 @@ export default function PointsLedgerPage() {
                     No entries found
                   </TableCell>
                 </TableRow>
-              ) : entries.map(entry => (
-                <TableRow key={entry.id} hover sx={{ '&:hover': { backgroundColor: '#F8FAFC' } }}>
+              ) : entries.map((entry, idx) => (
+                <TableRow key={entry.id} hover sx={{
+                  backgroundColor: idx % 2 === 0 ? '#fff' : '#FAFAFA',
+                  '&:hover': { backgroundColor: '#F0F4FF' },
+                  borderLeft: entry.points > 0 ? '3px solid #10B981' : '3px solid #EF4444',
+                }}>
 
                   {/* User */}
                   <TableCell>
@@ -523,24 +565,40 @@ export default function PointsLedgerPage() {
 
                   {/* Type */}
                   <TableCell>
-                    <Chip label={entry.type} size="small" color={TYPE_COLORS[entry.type] || 'default'} />
+                    {(() => {
+                      const ts = TYPE_STYLES[entry.type] || { bg: '#F3F4F6', color: '#374151', label: entry.type };
+                      return (
+                        <Box sx={{
+                          display: 'inline-block',
+                          px: 1.5, py: 0.4,
+                          borderRadius: 2,
+                          backgroundColor: ts.bg,
+                          color: ts.color,
+                          fontSize: 11,
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          letterSpacing: 0.5,
+                        }}>
+                          {ts.label}
+                        </Box>
+                      );
+                    })()}
                   </TableCell>
 
                   {/* Source */}
                   <TableCell>
-                    <Typography variant="body2">{SOURCE_LABELS[entry.source] || entry.source}</Typography>
+                    <Typography variant="body2" fontWeight={500}>
+                      {SOURCE_LABELS[entry.source] || entry.source}
+                    </Typography>
                   </TableCell>
 
                   {/* Points */}
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                      {entry.points > 0
-                        ? <TrendingUp sx={{ fontSize: 16, color: '#10B981' }} />
-                        : <TrendingDown sx={{ fontSize: 16, color: '#EF4444' }} />}
                       <Typography
-                        fontWeight={700}
-                        color={entry.points > 0 ? 'success.main' : 'error.main'}
-                        variant="body2"
+                        fontWeight={800}
+                        fontSize={15}
+                        color={entry.points > 0 ? '#15803D' : '#B91C1C'}
                       >
                         {entry.points > 0 ? '+' : ''}{entry.points.toLocaleString()}
                       </Typography>
@@ -549,10 +607,10 @@ export default function PointsLedgerPage() {
 
                   {/* Balance after */}
                   <TableCell>
-                    <Typography variant="body2" fontWeight={600}>
+                    <Typography variant="body2" fontWeight={700} color="#1E293B">
                       {entry.balanceAfter.toLocaleString()}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">pts total</Typography>
+                    <Typography variant="caption" color="text.disabled">pts</Typography>
                   </TableCell>
 
                   {/* Note */}

@@ -11,6 +11,7 @@ interface User {
   name: string;
   email: string;
   phone: string | null;
+  avatarUrl?: string | null; // ✅ ADD THIS
   totalPoints: number;
   todayPoints: number;
   todayTasksCount: number;
@@ -138,9 +139,21 @@ const Users: React.FC = () => {
               >
                 {/* Header */}
                 <div style={styles.userCardHeader}>
-                  <div style={styles.userAvatar}>
+                  {user.avatarUrl ? (
+  <img 
+    src={user.avatarUrl} 
+    style={{ ...styles.userAvatar, objectFit: 'cover' }} 
+    alt={user.name}
+    onError={(e: any) => { e.target.style.display = 'none'; }}
+  />
+) : (
+  <div style={styles.userAvatar}>
+    {user.name.charAt(0).toUpperCase()}
+  </div>
+)}
+                  {/* <div style={styles.userAvatar}>
                     {user.name.charAt(0).toUpperCase()}
-                  </div>
+                  </div> */}
                   <div style={{ flex: 1 }}>
                     <div style={styles.userName}>{user.name}</div>
                     <div style={styles.userEmail}>{user.email}</div>

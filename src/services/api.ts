@@ -2,7 +2,12 @@
 import axios from 'axios';
 
 // const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api/v1';
-const BASE_URL =  'http://3.236.251.245:3000/api/v1';
+// const BASE_URL =  'http://3.236.251.245:3000/api/v1';
+// const BASE_URL =  'http://34.237.92.120:3000/api/v1';
+
+const BASE_URL = 'https://api.homvika.com/api/v1';
+
+
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -137,24 +142,37 @@ export const vendorsApi = {
   toggleStatus: (id: string, isActive: boolean) =>
     api.patch(`/admin/vendors/${id}/toggle-status`, { isActive }),
   delete: (id: string) => api.delete(`/admin/vendors/${id}`),
+  // ✅ Subscription management
+  approveSubscription: (vendorId: string) =>
+    api.post(`/vendor/subscription/approve/${vendorId}`),
+  cancelSubscription: (vendorId: string) =>
+    api.post(`/vendor/subscription/cancel/${vendorId}`),
 };
 
 // ══════════════════════════════════════════════════════════════════
-// ✅ TASK REVIEWS API (NEW)
+// ✅ TASK REVIEWS API
 // ══════════════════════════════════════════════════════════════════
 
 export const taskReviewsApi = {
-  // GET pending submissions
   getPending: (params?: { page?: number; limit?: number }) =>
     api.get('/admin/pending-tasks', { params }),
-
-  // POST approve — body: { bonusPoints?: number }
   approve: (userTaskId: string, bonusPoints = 0) =>
     api.post(`/admin/pending-tasks/${userTaskId}/approve`, { bonusPoints }),
-
-  // POST reject — body: { reason: string }
   reject: (userTaskId: string, reason: string) =>
     api.post(`/admin/pending-tasks/${userTaskId}/reject`, { reason }),
+};
+
+// ══════════════════════════════════════════════════════════════════
+// ✅ FEED TIP REVIEWS API
+// ══════════════════════════════════════════════════════════════════
+
+export const feedReviewsApi = {
+  getAll: (params?: { status?: string; page?: number; limit?: number }) =>
+    api.get('/admin/feed-reviews', { params }),
+  approve: (id: string) =>
+    api.post(`/admin/feed-reviews/${id}/approve`),
+  reject: (id: string) =>
+    api.post(`/admin/feed-reviews/${id}/reject`),
 };
 
 // ══════════════════════════════════════════════════════════════════

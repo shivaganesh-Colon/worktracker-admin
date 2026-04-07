@@ -1,6 +1,4 @@
-// worktracker-admin/src/routes.tsx
-// UPDATED: Add Settings page
-
+// src/routes.tsx
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AdminDashboard from './pages/Dashboard';
@@ -9,14 +7,16 @@ import ProgramForm from './pages/ProgramForm';
 import ProgramDetail from './pages/ProgramDetail';
 import Login from './pages/login';
 import Tasks from './pages/Tasks';
+import TaskForm from './pages/TaskForm'; // ✅ NEW
 import TaskSuggestions from './pages/TaskSuggestions';
 import Users from './pages/Users';
 import UserDetail from './pages/UserDetail';
 import Vendors from './pages/Vendors';
 import VendorDetail from './pages/VendorDetail';
 import Withdrawals from './pages/Withdrawals';
-import Settings from './pages/Settings'; // ✅ NEW
-import PendingTaskReviews from './pages/PendingTaskReviews'; // ✅ NEW
+import Settings from './pages/Settings';
+import PendingTaskReviews from './pages/PendingTaskReviews';
+import PendingTipReviews from './pages/Pendingtipreviews';
 import { COLORS } from './theme/colours';
 import { useNavigate, useLocation } from 'react-router-dom';
 import PointsLedgerPage from './pages/Pointsledger';
@@ -29,15 +29,15 @@ const NAV_ITEMS = [
   { path: '/users', label: '👥 Users' },
   { path: '/vendors', label: '🏪 Vendors' },
   { path: '/withdrawals', label: '💰 Withdrawals' },
-  { path: '/settings', label: '⚙️ Settings' }, // ✅ NEW
-  { path: '/pending-tasks', label: '📸 Task Reviews' }, // ✅ NEW
-  { path: '/points-ledger', label: '💰 Points Ledger' }, // ✅ NEW
-  
+  { path: '/settings', label: '⚙️ Settings' },
+  { path: '/pending-tasks', label: '📸 Task Reviews' },
+  { path: '/tip-reviews', label: '💡 Tip Reviews' },
+  { path: '/points-ledger', label: '💰 Points Ledger' },
 ];
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate  = useNavigate();
+  const location  = useLocation();
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
@@ -45,7 +45,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <div style={sidebarStyles.sidebar}>
         <div style={sidebarStyles.logo}>
           <span style={{ fontSize: 22, fontWeight: 800, color: COLORS.primary }}>
-            WorkTracker
+            Homvika
           </span>
           <span style={{ fontSize: 11, color: COLORS.textLight, display: 'block' }}>
             Admin Panel
@@ -154,171 +154,48 @@ const AppRoutes: React.FC = () => (
       {/* Public */}
       <Route path="/login" element={<Login />} />
 
-      {/* Protected */}
-      <Route
-        path="/"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <AdminDashboard />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
+      {/* Dashboard */}
+      <Route path="/" element={<PrivateRoute><Layout><AdminDashboard /></Layout></PrivateRoute>} />
 
       {/* Programs */}
-      <Route
-        path="/programs"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <Programs />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/programs/create"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <ProgramForm />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/programs/:id"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <ProgramDetail />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/programs/:id/edit"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <ProgramForm />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
+      <Route path="/programs" element={<PrivateRoute><Layout><Programs /></Layout></PrivateRoute>} />
+      <Route path="/programs/create" element={<PrivateRoute><Layout><ProgramForm /></Layout></PrivateRoute>} />
+      <Route path="/programs/:id" element={<PrivateRoute><Layout><ProgramDetail /></Layout></PrivateRoute>} />
+      <Route path="/programs/:id/edit" element={<PrivateRoute><Layout><ProgramForm /></Layout></PrivateRoute>} />
 
       {/* Tasks */}
-      <Route
-        path="/tasks"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <Tasks />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/task-suggestions"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <TaskSuggestions />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
+      <Route path="/tasks" element={<PrivateRoute><Layout><Tasks /></Layout></PrivateRoute>} />
+      {/* ✅ NEW: Create task */}
+      <Route path="/tasks/create" element={<PrivateRoute><Layout><TaskForm /></Layout></PrivateRoute>} />
+      {/* ✅ NEW: Edit task */}
+      <Route path="/tasks/:id/edit" element={<PrivateRoute><Layout><TaskForm /></Layout></PrivateRoute>} />
+
+      {/* Task Suggestions */}
+      <Route path="/task-suggestions" element={<PrivateRoute><Layout><TaskSuggestions /></Layout></PrivateRoute>} />
 
       {/* Users */}
-      <Route
-        path="/users"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <Users />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/users/:id"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <UserDetail />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
+      <Route path="/users" element={<PrivateRoute><Layout><Users /></Layout></PrivateRoute>} />
+      <Route path="/users/:id" element={<PrivateRoute><Layout><UserDetail /></Layout></PrivateRoute>} />
 
       {/* Vendors */}
-      <Route
-        path="/vendors"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <Vendors />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/vendors/:id"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <VendorDetail />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
+      <Route path="/vendors" element={<PrivateRoute><Layout><Vendors /></Layout></PrivateRoute>} />
+      <Route path="/vendors/:id" element={<PrivateRoute><Layout><VendorDetail /></Layout></PrivateRoute>} />
 
       {/* Withdrawals */}
-      <Route
-        path="/withdrawals"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <Withdrawals />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
+      <Route path="/withdrawals" element={<PrivateRoute><Layout><Withdrawals /></Layout></PrivateRoute>} />
 
-      {/* ✅ NEW: Settings */}
-      <Route
-        path="/settings"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <Settings />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
+      {/* Settings */}
+      <Route path="/settings" element={<PrivateRoute><Layout><Settings /></Layout></PrivateRoute>} />
 
-      {/* ✅ NEW: Pending Task Reviews */}
-      <Route
-        path="/pending-tasks"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <PendingTaskReviews />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-<Route
-        path="/points-ledger"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <PointsLedgerPage />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
+      {/* Pending Task Reviews */}
+      <Route path="/pending-tasks" element={<PrivateRoute><Layout><PendingTaskReviews /></Layout></PrivateRoute>} />
+
+      {/* Tip Reviews */}
+      <Route path="/tip-reviews" element={<PrivateRoute><Layout><PendingTipReviews /></Layout></PrivateRoute>} />
+
+      {/* Points Ledger */}
+      <Route path="/points-ledger" element={<PrivateRoute><Layout><PointsLedgerPage /></Layout></PrivateRoute>} />
+
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

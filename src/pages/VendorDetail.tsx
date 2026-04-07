@@ -16,6 +16,11 @@ interface VendorDetail {
   offers: any[];
   redemptions: any[];
   dailyRedemptions: Array<{ date: string; count: number }>;
+  // Subscription
+  subscriptionActive: boolean;
+  subscriptionStart: string | null;
+  subscriptionEnd: string | null;
+  subscriptionRequestedAt: string | null;
   stats: {
     totalOffers: number;
     activeOffers: number;
@@ -56,6 +61,28 @@ const VendorDetail: React.FC = () => {
       alert(`Vendor ${isActive ? 'activated' : 'deactivated'} successfully`);
     } catch (error) {
       alert('Failed to toggle vendor status');
+    }
+  };
+
+  const handleApproveSubscription = async () => {
+    if (!window.confirm(`Approve subscription for ${vendor?.businessName}? This gives them 30 days access to create offers.`)) return;
+    try {
+      await vendorsApi.approveSubscription(id!);
+      alert('✅ Subscription approved for 30 days!');
+      loadVendor();
+    } catch (error) {
+      alert('Failed to approve subscription');
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    if (!window.confirm(`Cancel subscription for ${vendor?.businessName}? They will lose access immediately.`)) return;
+    try {
+      await vendorsApi.cancelSubscription(id!);
+      alert('❌ Subscription cancelled');
+      loadVendor();
+    } catch (error) {
+      alert('Failed to cancel subscription');
     }
   };
 
@@ -112,6 +139,38 @@ const VendorDetail: React.FC = () => {
             >
               {hasActiveOffers ? 'Deactivate Vendor' : 'Activate Vendor'}
             </button>
+
+            {/* Subscription Controls */}
+            {vendor.subscriptionActive ? (
+              <div style={detailStyles.subActiveBox}>
+                <div style={detailStyles.subActiveText}>
+                  ✅ Subscribed · {vendor.subscriptionEnd
+                    ? Math.max(0, Math.ceil((new Date(vendor.subscriptionEnd).getTime() - Date.now()) / 86400000)) + ' days left'
+                    : ''}
+                </div>
+                <div style={detailStyles.subDates}>
+                  {vendor.subscriptionStart && `From: ${new Date(vendor.subscriptionStart).toLocaleDateString()}`}
+                  {vendor.subscriptionEnd && ` → ${new Date(vendor.subscriptionEnd).toLocaleDateString()}`}
+                </div>
+                <button onClick={handleCancelSubscription} style={detailStyles.cancelSubBtn}>
+                  Cancel Subscription
+                </button>
+              </div>
+            ) : vendor.subscriptionRequestedAt ? (
+              <div style={detailStyles.subPendingBox}>
+                <div style={detailStyles.subPendingText}>
+                  🔔 Subscription requested on {new Date(vendor.subscriptionRequestedAt).toLocaleDateString()}
+                </div>
+                <button onClick={handleApproveSubscription} style={detailStyles.approveSubBtn}>
+                  ✅ Approve Subscription (30 days)
+                </button>
+              </div>
+            ) : (
+              <div style={detailStyles.subInactiveBox}>
+                <div style={detailStyles.subInactiveText}>⚪ No subscription</div>
+              </div>
+            )}
+
             <button onClick={handleDelete} style={styles.deleteButton}>
               Delete Vendor
             </button>
@@ -556,6 +615,34 @@ const styles: any = {
     color: COLORS.error,
     fontSize: '16px',
   },
+};
+
+const detailStyles: any = {
+  subActiveBox: {
+    background: '#dcfce7', border: '1px solid #86efac',
+    borderRadius: '10px', padding: '14px',
+  },
+  subActiveText: { fontSize: '14px', fontWeight: '700', color: '#166534', marginBottom: '4px' },
+  subDates: { fontSize: '12px', color: '#166534', marginBottom: '10px' },
+  cancelSubBtn: {
+    padding: '8px 16px', background: '#fee2e2', color: '#dc2626',
+    border: '1px solid #fca5a5', borderRadius: '8px',
+    cursor: 'pointer', fontWeight: '600', fontSize: '13px', width: '100%',
+  },
+  subPendingBox: {
+    background: '#fffbeb', border: '1px solid #fde68a',
+    borderRadius: '10px', padding: '14px',
+  },
+  subPendingText: { fontSize: '13px', color: '#92400e', marginBottom: '10px' },
+  approveSubBtn: {
+    padding: '10px 16px', background: '#e8f5e9', color: '#2e7d32',
+    border: '1px solid #a5d6a7', borderRadius: '8px',
+    cursor: 'pointer', fontWeight: '700', fontSize: '14px', width: '100%',
+  },
+  subInactiveBox: {
+    background: '#f5f5f5', borderRadius: '10px', padding: '12px', textAlign: 'center',
+  },
+  subInactiveText: { fontSize: '13px', color: '#757575', fontWeight: '500' },
 };
 
 export default VendorDetail;
