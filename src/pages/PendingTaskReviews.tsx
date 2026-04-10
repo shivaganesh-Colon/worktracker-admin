@@ -390,7 +390,7 @@ export default function PendingTaskReviews() {
       });
 
       const total = selected.task.basePoints + parseInt(bonusPoints || '0', 10);
-      alert(`✅ Approved! ${selected.user.fullName} earned ${total} points. User and followers have been notified.`);
+      // alert(`✅ Approved! ${selected.user.fullName} earned ${total} points. User and followers have been notified.`);
 
       setActionOpen(false);
       await loadTasks();

@@ -128,6 +128,7 @@ export const usersApi = {
   getById: (id: string) => api.get(`/admin/users/${id}`),
   getStats: () => api.get('/admin/users/stats'),
   deactivate: (id: string) => api.patch(`/admin/users/${id}/deactivate`),
+  reactivate: (id: string) => api.patch(`/admin/users/${id}/reactivate`), // ✅ NEW
 };
 
 // ══════════════════════════════════════════════════════════════════

@@ -11,7 +11,8 @@ interface UserDetail {
   name: string;
   email: string;
   phone: string | null;
-  avatarUrl?: string | null; // ✅ ADD THIS
+  avatarUrl?: string | null;
+  isActive: boolean;        // ✅ ADDED
   totalPoints: number;
   tasksCompleted: number;
   level: number;
@@ -56,15 +57,27 @@ const UserDetail: React.FC = () => {
     }
   };
 
+  // ✅ Deactivate handler
   const handleDeactivate = async () => {
     if (!window.confirm('Are you sure you want to deactivate this user?')) return;
-    
     try {
       await usersApi.deactivate(id!);
       alert('User deactivated successfully');
-      navigate('/users');
+      loadUser(); // ✅ Refresh instead of navigate away
     } catch (error) {
       alert('Failed to deactivate user');
+    }
+  };
+
+  // ✅ Reactivate handler
+  const handleReactivate = async () => {
+    if (!window.confirm('Reactivate this user? They will regain full access.')) return;
+    try {
+      await usersApi.reactivate(id!);
+      alert('User reactivated successfully');
+      loadUser(); // ✅ Refresh page
+    } catch (error) {
+      alert('Failed to reactivate user');
     }
   };
 
@@ -85,34 +98,52 @@ const UserDetail: React.FC = () => {
         </button>
       </div>
 
+      {/* ✅ Inactive banner */}
+      {!user.isActive && (
+        <div style={styles.inactiveBanner}>
+          ⚠️ This user is currently <strong>deactivated</strong> — they cannot log in or use the app.
+        </div>
+      )}
+
       {/* User Profile Card */}
       <div style={styles.profileCard}>
         <div style={styles.profileHeader}>
           {user.avatarUrl ? (
-  <img 
-    src={user.avatarUrl} 
-    style={{ ...styles.avatar, objectFit: 'cover' }} 
-    alt={user.name}
-  />
-) : (
-  <div style={styles.avatar}>
-    {user.name.charAt(0).toUpperCase()}
-  </div>
-)}
-          {/* <div style={styles.avatar}>
-            {user.name.charAt(0).toUpperCase()}
-          </div> */}
+            <img
+              src={user.avatarUrl}
+              style={{ ...styles.avatar, objectFit: 'cover' }}
+              alt={user.name}
+            />
+          ) : (
+            <div style={styles.avatar}>
+              {user.name.charAt(0).toUpperCase()}
+            </div>
+          )}
           <div style={{ flex: 1 }}>
-            <h1 style={styles.name}>{user.name}</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <h1 style={styles.name}>{user.name}</h1>
+              {/* ✅ Active/Inactive badge */}
+              <span style={user.isActive ? styles.activeBadge : styles.inactiveBadge}>
+                {user.isActive ? '● Active' : '● Inactive'}
+              </span>
+            </div>
             <div style={styles.email}>{user.email}</div>
             {user.phone && <div style={styles.phone}>📞 {user.phone}</div>}
             <div style={styles.joinDate}>
               Joined {new Date(user.createdAt).toLocaleDateString()}
             </div>
           </div>
-          <button onClick={handleDeactivate} style={styles.deactivateButton}>
-            Deactivate User
-          </button>
+
+          {/* ✅ Show correct button based on isActive */}
+          {user.isActive ? (
+            <button onClick={handleDeactivate} style={styles.deactivateButton}>
+              Deactivate User
+            </button>
+          ) : (
+            <button onClick={handleReactivate} style={styles.reactivateButton}>
+              ✅ Reactivate User
+            </button>
+          )}
         </div>
       </div>
 
@@ -175,7 +206,7 @@ const UserDetail: React.FC = () => {
             {user.dailyPoints.map((day, index) => {
               const maxPoints = Math.max(...user.dailyPoints.map(d => d.points));
               const height = maxPoints > 0 ? (day.points / maxPoints) * 100 : 0;
-              
+
               return (
                 <div key={index} style={styles.chartBar}>
                   <div style={styles.chartBarLabel}>{day.points}</div>
@@ -194,7 +225,7 @@ const UserDetail: React.FC = () => {
             })}
           </div>
           <div style={styles.chartLegend}>
-            Best day: {new Date(user.stats.bestDay.date).toLocaleDateString()} 
+            Best day: {new Date(user.stats.bestDay.date).toLocaleDateString()}
             ({user.stats.bestDay.points} points)
           </div>
         </div>
@@ -233,7 +264,7 @@ const UserDetail: React.FC = () => {
       <div style={styles.section}>
         <h2 style={styles.sectionTitle}>🎁 Redemption History</h2>
         <div style={styles.listCard}>
-          {user?.redemptions?.map((reward:any) => (
+          {user?.redemptions?.map((reward: any) => (
             <div key={reward.id} style={styles.listItem}>
               <div style={styles.listItemIcon}>🎁</div>
               <div style={{ flex: 1 }}>
@@ -299,6 +330,18 @@ const styles: any = {
     color: COLORS.text,
   },
 
+  // ✅ Inactive banner
+  inactiveBanner: {
+    backgroundColor: '#FEF2F2',
+    border: '1px solid #FECACA',
+    borderRadius: '8px',
+    padding: '12px 20px',
+    marginBottom: '24px',
+    color: '#DC2626',
+    fontSize: '14px',
+    fontWeight: '500',
+  },
+
   // Profile Card
   profileCard: {
     background: '#fff',
@@ -330,6 +373,25 @@ const styles: any = {
     color: COLORS.text,
     margin: 0,
   },
+
+  // ✅ Active/Inactive badges
+  activeBadge: {
+    padding: '4px 10px',
+    backgroundColor: '#D1FAE5',
+    color: '#065F46',
+    borderRadius: '20px',
+    fontSize: '12px',
+    fontWeight: '600',
+  },
+  inactiveBadge: {
+    padding: '4px 10px',
+    backgroundColor: '#FEE2E2',
+    color: '#991B1B',
+    borderRadius: '20px',
+    fontSize: '12px',
+    fontWeight: '600',
+  },
+
   email: {
     fontSize: '16px',
     color: COLORS.textSecondary,
@@ -345,10 +407,22 @@ const styles: any = {
     color: COLORS.textLight,
     marginTop: '8px',
   },
+
+  // ✅ Deactivate / Reactivate buttons
   deactivateButton: {
     padding: '12px 24px',
     background: COLORS.errorLight,
     color: COLORS.error,
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontWeight: '600',
+    fontSize: '14px',
+  },
+  reactivateButton: {
+    padding: '12px 24px',
+    background: '#D1FAE5',
+    color: '#065F46',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
@@ -370,31 +444,13 @@ const styles: any = {
     border: `1px solid ${COLORS.border}`,
     textAlign: 'center',
   },
-  statIcon: {
-    fontSize: '32px',
-    marginBottom: '12px',
-  },
-  statValue: {
-    fontSize: '24px',
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: '4px',
-  },
-  statLabel: {
-    fontSize: '13px',
-    color: COLORS.textSecondary,
-  },
+  statIcon: { fontSize: '32px', marginBottom: '12px' },
+  statValue: { fontSize: '24px', fontWeight: '700', color: COLORS.text, marginBottom: '4px' },
+  statLabel: { fontSize: '13px', color: COLORS.textSecondary },
 
   // Sections
-  section: {
-    marginBottom: '32px',
-  },
-  sectionTitle: {
-    fontSize: '20px',
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: '16px',
-  },
+  section: { marginBottom: '32px' },
+  sectionTitle: { fontSize: '20px', fontWeight: '700', color: COLORS.text, marginBottom: '16px' },
 
   // Chart
   chartCard: {
@@ -417,26 +473,10 @@ const styles: any = {
     alignItems: 'center',
     gap: '4px',
   },
-  chartBarLabel: {
-    fontSize: '10px',
-    color: COLORS.textLight,
-    fontWeight: '600',
-  },
-  chartBarFill: {
-    width: '100%',
-    borderRadius: '4px 4px 0 0',
-    minHeight: '2px',
-  },
-  chartBarDate: {
-    fontSize: '10px',
-    color: COLORS.textLight,
-    marginTop: '4px',
-  },
-  chartLegend: {
-    fontSize: '13px',
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-  },
+  chartBarLabel: { fontSize: '10px', color: COLORS.textLight, fontWeight: '600' },
+  chartBarFill: { width: '100%', borderRadius: '4px 4px 0 0', minHeight: '2px' },
+  chartBarDate: { fontSize: '10px', color: COLORS.textLight, marginTop: '4px' },
+  chartLegend: { fontSize: '13px', color: COLORS.textSecondary, textAlign: 'center' },
 
   // List Card
   listCard: {
@@ -452,25 +492,10 @@ const styles: any = {
     padding: '16px 20px',
     borderBottom: `1px solid ${COLORS.border}`,
   },
-  listItemIcon: {
-    fontSize: '24px',
-  },
-  listItemTitle: {
-    fontSize: '15px',
-    fontWeight: '600',
-    color: COLORS.text,
-  },
-  listItemSubtitle: {
-    fontSize: '13px',
-    color: COLORS.textSecondary,
-    marginTop: '4px',
-  },
-  couponCode: {
-    fontSize: '12px',
-    color: COLORS.primary,
-    marginTop: '4px',
-    fontFamily: 'monospace',
-  },
+  listItemIcon: { fontSize: '24px' },
+  listItemTitle: { fontSize: '15px', fontWeight: '600', color: COLORS.text },
+  listItemSubtitle: { fontSize: '13px', color: COLORS.textSecondary, marginTop: '4px' },
+  couponCode: { fontSize: '12px', color: COLORS.primary, marginTop: '4px', fontFamily: 'monospace' },
   listItemBadge: {
     padding: '6px 12px',
     background: COLORS.primaryLight,
@@ -487,12 +512,7 @@ const styles: any = {
     fontSize: '12px',
     fontWeight: '600',
   },
-  emptyState: {
-    padding: '40px',
-    textAlign: 'center',
-    color: COLORS.textSecondary,
-    fontSize: '14px',
-  },
+  emptyState: { padding: '40px', textAlign: 'center', color: COLORS.textSecondary, fontSize: '14px' },
 
   // Achievements
   achievementsGrid: {
@@ -507,33 +527,12 @@ const styles: any = {
     border: `1px solid ${COLORS.border}`,
     textAlign: 'center',
   },
-  achievementIcon: {
-    fontSize: '40px',
-    marginBottom: '12px',
-  },
-  achievementName: {
-    fontSize: '15px',
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: '4px',
-  },
-  achievementDesc: {
-    fontSize: '12px',
-    color: COLORS.textSecondary,
-  },
+  achievementIcon: { fontSize: '40px', marginBottom: '12px' },
+  achievementName: { fontSize: '15px', fontWeight: '600', color: COLORS.text, marginBottom: '4px' },
+  achievementDesc: { fontSize: '12px', color: COLORS.textSecondary },
 
-  loading: {
-    textAlign: 'center',
-    padding: '100px',
-    color: COLORS.textSecondary,
-    fontSize: '16px',
-  },
-  error: {
-    textAlign: 'center',
-    padding: '100px',
-    color: COLORS.error,
-    fontSize: '16px',
-  },
+  loading: { textAlign: 'center', padding: '100px', color: COLORS.textSecondary, fontSize: '16px' },
+  error: { textAlign: 'center', padding: '100px', color: COLORS.error, fontSize: '16px' },
 };
 
 export default UserDetail;

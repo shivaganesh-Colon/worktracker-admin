@@ -22,6 +22,7 @@ interface User {
   postsCount: number;
   rewardsCount: number;
   createdAt: string;
+  isRecentlyActive: boolean;  // ✅ ADD THIS
 }
 
 const Users: React.FC = () => {
@@ -161,9 +162,18 @@ const Users: React.FC = () => {
                       <div style={styles.userPhone}>📞 {user.phone}</div>
                     )}
                   </div>
-                  <div style={user.isActive ? styles.activeBadge : styles.inactiveBadge}>
+                                <div style={
+                !user.isActive ? styles.inactiveBadge :
+                user.isRecentlyActive ? styles.activeBadge :
+                styles.idleBadge
+              }>
+                {!user.isActive ? '⚪ Deactivated' :
+                user.isRecentlyActive ? '✅ Active' :
+                '🟡 Idle'}
+              </div>
+                  {/* <div style={user.isActive ? styles.activeBadge : styles.inactiveBadge}>
                     {user.isActive ? '✅ Active' : '⚪ Inactive'}
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Stats */}
@@ -464,6 +474,14 @@ const styles: any = {
     color: COLORS.textSecondary,
     fontSize: '16px',
   },
+  idleBadge: {
+  padding: '4px 12px',
+  borderRadius: '12px',
+  background: '#FFF9C4',
+  color: '#F57F17',
+  fontSize: '12px',
+  fontWeight: '600',
+},
 };
 
 export default Users;
