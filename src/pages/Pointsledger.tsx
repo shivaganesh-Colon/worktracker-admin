@@ -382,8 +382,11 @@ export default function PointsLedgerPage() {
           <Grid item xs={6} sm={3}>
             <StatCard label="Bonuses Given"    value={stats.totalBonus}       color="#F59E0B" icon={<EmojiEvents />}           sub="all time" />
           </Grid>
-          <Grid item xs={6} sm={3}>
+          {/* <Grid item xs={6} sm={3}>
             <StatCard label="Total Withdrawn"  value={stats.totalWithdrawals} color="#EF4444" icon={<AccountBalanceWallet />}  sub="all time" />
+          </Grid> */}
+          <Grid item xs={6} sm={3}>
+            <StatCard label="Total Redeemed"  value={stats.totalSpent ?? 0} color="#6366F1" icon={<EmojiEvents />}  sub="all time" />
           </Grid>
           <Grid item xs={6} sm={3}>
             <StatCard label="Total Entries"    value={stats.entryCount}       color="#6366F1" icon={<Person />}                sub={`${stats.uniqueUsers} users`} />

@@ -20,6 +20,7 @@ import PendingTipReviews from './pages/Pendingtipreviews';
 import { COLORS } from './theme/colours';
 import { useNavigate, useLocation } from 'react-router-dom';
 import PointsLedgerPage from './pages/Pointsledger';
+import Communications from './pages/Communications';
 
 const NAV_ITEMS = [
   { path: '/', label: '📊 Dashboard', exact: true },
@@ -33,6 +34,8 @@ const NAV_ITEMS = [
   { path: '/pending-tasks', label: '📸 Task Reviews' },
   { path: '/tip-reviews', label: '💡 Tip Reviews' },
   { path: '/points-ledger', label: '💰 Points Ledger' },
+  { path: '/communications', label: '📡 Communications' },
+
 ];
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -195,6 +198,7 @@ const AppRoutes: React.FC = () => (
 
       {/* Points Ledger */}
       <Route path="/points-ledger" element={<PrivateRoute><Layout><PointsLedgerPage /></Layout></PrivateRoute>} />
+      <Route path="/communications" element={<PrivateRoute><Layout><Communications /></Layout></PrivateRoute>} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
