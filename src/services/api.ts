@@ -179,7 +179,12 @@ export const feedReviewsApi = {
 // ══════════════════════════════════════════════════════════════════
 // DASHBOARD API
 // ══════════════════════════════════════════════════════════════════
-
+export const bannerApi = {
+  getActive:   ()         => api.get('/banner/active'),
+  getAll:      ()         => api.get('/banner'),
+  create:      (data: any) => api.post('/banner', data),
+  deactivate:  (id: string) => api.patch(`/banner/${id}/deactivate`),
+};
 export const dashboardApi = {
   getStats: () =>
     api.get<{
