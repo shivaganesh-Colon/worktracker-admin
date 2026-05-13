@@ -185,6 +185,16 @@ export const bannerApi = {
   create:      (data: any) => api.post('/banner', data),
   deactivate:  (id: string) => api.patch(`/banner/${id}/deactivate`),
 };
+
+export const carouselApi = {
+  getAll:    ()              => api.get('/admin/carousel'),
+  create:    (data: FormData) => api.post('/admin/carousel', data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  toggle:    (id: string)    => api.patch(`/admin/carousel/${id}/toggle`),
+  delete:    (id: string)    => api.delete(`/admin/carousel/${id}`),
+  getActive: ()              => api.get('/carousel/active'),
+};
 export const dashboardApi = {
   getStats: () =>
     api.get<{

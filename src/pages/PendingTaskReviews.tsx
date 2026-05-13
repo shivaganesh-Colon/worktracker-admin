@@ -389,11 +389,13 @@ export default function PendingTaskReviews() {
         bonusPoints: parseInt(bonusPoints || '0', 10),
       });
 
-      const total = selected.task.basePoints + parseInt(bonusPoints || '0', 10);
-      // alert(`✅ Approved! ${selected.user.fullName} earned ${total} points. User and followers have been notified.`);
+      const totalPts = selected.task.basePoints + parseInt(bonusPoints || '0', 10);
 
+      // ✅ Remove approved task from local state instantly — no refetch needed
+      setTasks(prev => prev.filter(t => t.id !== selected.id));
+      setTotal(prev => prev - 1);
+      setSelected(null);
       setActionOpen(false);
-      await loadTasks();
     } catch (error: any) {
       alert('Error: ' + (error.response?.data?.message || 'Failed to approve'));
     } finally {
@@ -414,10 +416,11 @@ export default function PendingTaskReviews() {
         reason: rejectReason.trim(),
       });
 
-      alert(`❌ Rejected. ${selected.user.fullName} has been notified with your reason.`);
-
+      // ✅ Remove rejected task from local state instantly — no refetch needed
+      setTasks(prev => prev.filter(t => t.id !== selected.id));
+      setTotal(prev => prev - 1);
+      setSelected(null);
       setActionOpen(false);
-      await loadTasks();
     } catch (error: any) {
       alert('Error: ' + (error.response?.data?.message || 'Failed to reject'));
     } finally {

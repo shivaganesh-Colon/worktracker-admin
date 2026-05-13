@@ -22,6 +22,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import PointsLedgerPage from './pages/Pointsledger';
 import Communications from './pages/Communications';
 import Banners from './pages/Banners';
+import CarouselOffers from './pages/CarouselOffers';
 
 const NAV_ITEMS = [
   { path: '/', label: '📊 Dashboard', exact: true },
@@ -36,7 +37,8 @@ const NAV_ITEMS = [
   { path: '/tip-reviews', label: '💡 Tip Reviews' },
   { path: '/points-ledger', label: '💰 Points Ledger' },
   { path: '/communications', label: '📡 Communications' },
-  { path: '/banners', label: '🏠 Banners' }
+  { path: '/banners', label: '🏠 Banners' },
+{ path: '/carousel-offers', label: '🎠 Carousel Offers' },
 
 
 
@@ -204,6 +206,7 @@ const AppRoutes: React.FC = () => (
       <Route path="/points-ledger" element={<PrivateRoute><Layout><PointsLedgerPage /></Layout></PrivateRoute>} />
       <Route path="/communications" element={<PrivateRoute><Layout><Communications /></Layout></PrivateRoute>} />
 <Route path="/banners" element={<PrivateRoute><Layout><Banners /></Layout></PrivateRoute>} />
+<Route path="/carousel-offers" element={<PrivateRoute><Layout><CarouselOffers /></Layout></PrivateRoute>} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
