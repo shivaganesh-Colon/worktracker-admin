@@ -30,6 +30,7 @@ export default function CarouselOffers() {
   const [error, setError]           = useState('');
   const [success, setSuccess]       = useState('');
   const fileRef                     = useRef<HTMLInputElement>(null);
+  const [editingOffer, setEditingOffer] = useState<CarouselOffer | null>(null);
 
   // Form state
   const [title, setTitle]                   = useState('');
@@ -128,6 +129,55 @@ export default function CarouselOffers() {
     }
   };
 
+  const handleEdit = (offer: CarouselOffer) => {
+    setEditingOffer(offer);
+    setTitle(offer.title);
+    setActualPrice(offer.actualPrice?.toString() || '');
+    setOfferPrice(offer.offerPrice?.toString() || '');
+    setPointsRequired(offer.pointsRequired?.toString() || '');
+    setOfferType(offer.offerType);
+    setExpiresAt(offer.expiresAt ? new Date(offer.expiresAt).toISOString().slice(0, 16) : '');
+    setImagePreview(offer.imageUrl);
+    setImageFile(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingOffer(null);
+    resetForm();
+  };
+
+  const handleUpdate = async () => {
+    if (!editingOffer) return;
+    if (!title.trim()) return setError('Title is required');
+
+    try {
+      setSubmitting(true);
+      setError('');
+
+      const formData = new FormData();
+      formData.append('title',     title.trim());
+      formData.append('offerType', offerType);
+      if (imageFile)      formData.append('image',          imageFile);
+      if (actualPrice)    formData.append('actualPrice',    actualPrice);
+      if (offerPrice)     formData.append('offerPrice',     offerPrice);
+      if (pointsRequired) formData.append('pointsRequired', pointsRequired);
+      if (expiresAt)      formData.append('expiresAt',      new Date(expiresAt).toISOString());
+
+      await carouselApi.edit(editingOffer.id, formData);
+
+      setSuccess('✅ Offer updated successfully!');
+      setEditingOffer(null);
+      resetForm();
+      loadOffers();
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err: any) {
+      setError(err?.response?.data?.error || 'Failed to update offer');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const getOfferLabel = (offer: CarouselOffer) => {
     switch (offer.offerType) {
       case 'points_only': return `${offer.pointsRequired} pts → FREE`;
@@ -149,7 +199,7 @@ export default function CarouselOffers() {
 
         {/* ── CREATE FORM ── */}
         <div style={s.card}>
-          <h3 style={s.cardTitle}>✨ Create New Offer</h3>
+          <h3 style={s.cardTitle}>{editingOffer ? '✏️ Edit Offer' : '✨ Create New Offer'}</h3>
 
           {error   && <div style={s.error}>{error}</div>}
           {success && <div style={s.success}>{success}</div>}
@@ -225,9 +275,16 @@ export default function CarouselOffers() {
             <input style={s.input} type="datetime-local" value={expiresAt} onChange={e => setExpiresAt(e.target.value)} />
           </div>
 
-          <button style={{ ...s.btn, opacity: submitting ? 0.6 : 1 }} onClick={handleSubmit} disabled={submitting}>
-            {submitting ? 'Creating...' : '🚀 Create Offer'}
-          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {editingOffer && (
+              <button style={{ ...s.btn, backgroundColor: '#6B7280', flex: '0 0 auto', width: 'auto', padding: '12px 20px' }} onClick={handleCancelEdit}>
+                Cancel
+              </button>
+            )}
+            <button style={{ ...s.btn, opacity: submitting ? 0.6 : 1, flex: 1 }} onClick={editingOffer ? handleUpdate : handleSubmit} disabled={submitting}>
+              {submitting ? (editingOffer ? 'Updating...' : 'Creating...') : (editingOffer ? '💾 Update Offer' : '🚀 Create Offer')}
+            </button>
+          </div>
         </div>
 
         {/* ── OFFERS LIST ── */}
@@ -271,6 +328,12 @@ export default function CarouselOffers() {
 
                     {/* Actions */}
                     <div style={{ display: 'flex', gap: 8 }}>
+                      <button
+                        style={{ ...s.actionBtn, backgroundColor: '#EEF2FF', color: '#6366F1' }}
+                        onClick={() => handleEdit(offer)}
+                      >
+                        Edit
+                      </button>
                       <button
                         style={{ ...s.actionBtn, backgroundColor: offer.isActive ? '#FEF3C7' : '#D1FAE5', color: offer.isActive ? '#D97706' : '#059669' }}
                         onClick={() => handleToggle(offer.id)}

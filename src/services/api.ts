@@ -191,6 +191,9 @@ export const carouselApi = {
   create:    (data: FormData) => api.post('/admin/carousel', data, {
     headers: { 'Content-Type': 'multipart/form-data' },
   }),
+   edit:      (id: string, data: FormData) => api.put(`/admin/carousel/${id}`, data, {  // ← ADD
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
   toggle:    (id: string)    => api.patch(`/admin/carousel/${id}/toggle`),
   delete:    (id: string)    => api.delete(`/admin/carousel/${id}`),
   getActive: ()              => api.get('/carousel/active'),
