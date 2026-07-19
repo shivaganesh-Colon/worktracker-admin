@@ -23,7 +23,8 @@ import PointsLedgerPage from './pages/Pointsledger';
 import Communications from './pages/Communications';
 import Banners from './pages/Banners';
 import CarouselOffers from './pages/CarouselOffers';
-
+import Advertisements from './pages/Advertisements';  // import
+import Areas from './pages/Areas';
 const NAV_ITEMS = [
   { path: '/', label: '📊 Dashboard', exact: true },
   { path: '/programs', label: '🏆 Programs' },
@@ -40,6 +41,8 @@ const NAV_ITEMS = [
   { path: '/banners', label: '🏠 Banners' },
 { path: '/carousel-offers', label: '🎠 Carousel Offers' },
 
+{ path: '/advertisements', label: '📢 Advertisements' }  ,
+{ path: '/areas', label: '📍 Areas' }
 
 
 ];
@@ -207,7 +210,8 @@ const AppRoutes: React.FC = () => (
       <Route path="/communications" element={<PrivateRoute><Layout><Communications /></Layout></PrivateRoute>} />
 <Route path="/banners" element={<PrivateRoute><Layout><Banners /></Layout></PrivateRoute>} />
 <Route path="/carousel-offers" element={<PrivateRoute><Layout><CarouselOffers /></Layout></PrivateRoute>} />
-
+<Route path="/advertisements" element={<PrivateRoute><Layout><Advertisements /></Layout></PrivateRoute>} />
+<Route path="/areas" element={<PrivateRoute><Layout><Areas /></Layout></PrivateRoute>} />
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

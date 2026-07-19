@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { COLORS } from '../theme/colours';
 import axios from 'axios';
+import api from '../services/api';
 
 const BASE_URL = 'https://api.homvika.com/api/v1';
 
-const api = axios.create({ baseURL: BASE_URL });
+// const api = axios.create({ baseURL: BASE_URL });
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('admin_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;

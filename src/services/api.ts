@@ -198,6 +198,18 @@ export const carouselApi = {
   delete:    (id: string)    => api.delete(`/admin/carousel/${id}`),
   getActive: ()              => api.get('/carousel/active'),
 };
+export const sponsorApi = {
+  getAll:    ()                      => api.get('/admin/sponsor'),
+  create:    (data: FormData)        => api.post('/admin/sponsor', data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  edit:      (id: string, data: FormData) => api.put(`/admin/sponsor/${id}`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  toggle:    (id: string)            => api.patch(`/admin/sponsor/${id}/toggle`),
+  delete:    (id: string)            => api.delete(`/admin/sponsor/${id}`),
+  getActive: ()                      => api.get('/sponsor/active'),
+};
 export const dashboardApi = {
   getStats: () =>
     api.get<{
@@ -207,5 +219,15 @@ export const dashboardApi = {
       redemptions: number;
     }>('/admin/stats'),
 };
+
+export const areaApi = {
+  getAll:      ()      => api.get('/areas'),
+  search:      (q: string) => api.get(`/areas/search?q=${encodeURIComponent(q)}`),
+ adminGetAll: () => api.get('/areas/all'),
+add:    (data: any)  => api.post('/areas/'),
+toggle: (id: string) => api.patch(`/areas/${id}/toggle`),
+edit:   (id: string, data: any) => api.put(`/areas/${id}`, data),
+};
+
 
 export default api;
